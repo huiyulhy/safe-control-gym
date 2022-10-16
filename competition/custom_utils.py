@@ -170,7 +170,9 @@ def group_obstacles(nominal_obstacles, r, tol=0.1):
             obs = np.append(obs, init_r)
             cluster.append(obs)
             features[len(cluster)-1] = np.reshape(np.array(obs[0:3]), (1, 3))
-        
+    
+    # print("cluster results")
+    # print(cluster)
     return cluster
 
 # Function to update radius and centroid for cluster
