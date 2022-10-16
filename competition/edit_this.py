@@ -249,11 +249,12 @@ class Controller():
             # Obstacle avoidance by finding closest points on spline to obstacle
             # Adds another waypoint that projects the spline outward from centre of obstacle
             projected_points = []
-            for i in range(len(obstacle_info)):
-                projected_point = utils.check_intersect_poly(x_coeff, y_coeff, dt, obstacle_info[i][0], obstacle_info[i][1], obstacle_info[i][3])
-                if projected_point:
-                    # print("projected points", projected_point)
-                    projected_points += projected_point
+            if(obstacle_info is not None):
+                for i in range(len(obstacle_info)):
+                    projected_point = utils.check_intersect_poly(x_coeff, y_coeff, dt, obstacle_info[i][0], obstacle_info[i][1], obstacle_info[i][3])
+                    if projected_point:
+                        # print("projected points", projected_point)
+                        projected_points += projected_point
             if projected_points:
                 projected_points.sort(key = lambda x: x[0])
                 prev_t = 0

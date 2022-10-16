@@ -5,6 +5,7 @@ For the IROS competition
 """
 
 from math import sqrt, sin, cos, atan2, pi
+from cvxpy import norm2
 import numpy as np
 
 def cubic_interp(inv_t, x0, xf, dx0, dxf):
@@ -141,18 +142,67 @@ def update_waypoints_avoid_obstacles(spline_waypoints, waypoints, obstacles, ini
     return is_collision, waypoints
 
 # function to group obstacles into larger groups
-def group_obstacles(nominal_obstacles, init_r):
-    print("Nominal obstacles")
-    print(nominal_obstacles)
+def group_obstacles(nominal_obstacles, r, tol=0.1):
     if(len(nominal_obstacles) < 1):
         return None
-    init_obs = np.array((1, 4))
+    init_r = tol + 2*r
+    cluster = []
     features = {}
-    init_obs[0:3] = nominal_obstacles[0][0:3]
-    init_obs[3] = init_r
-    features[0] = nominal_obstacles[0][0:3]
-    return init_obs
+    obs = nominal_obstacles[0][0:3]
+    obs = np.append(obs, init_r)
+    cluster.append(obs)
+    features[0] = np.reshape(np.array(obs[0:3]), (1, 3))
 
+    for idx in range(1, len(nominal_obstacles)):
+        not_in_cluster = True
+        for j in range(len(cluster)):
+            if(is_point_in_cluster(nominal_obstacles[idx], cluster[j], tol)):
+                print("point is in cluster!")
+                features[j] = np.append(features[j], np.reshape(nominal_obstacles[idx][0:3], (1,3)), axis=0)
+                print(features[j])
+                cluster[j] = update_radius_and_centroid(features[j], tol, r)
+                not_in_cluster = False
+                continue
+
+        if(not_in_cluster):
+            print("create new cluster!")
+            obs = nominal_obstacles[idx][0:3]
+            obs = np.append(obs, init_r)
+            cluster.append(obs)
+            features[len(cluster)-1] = np.reshape(np.array(obs[0:3]), (1, 3))
+        
+    return cluster
+
+# Function to update radius and centroid for cluster
+# Assumes the new point has already been added
+# tol - tolerance, r - radius of obs, used to add an inflation radius
+def update_radius_and_centroid(obs, tol, r):
+    obs_info = [0, 0, 0, 0]
+    print("updating radius")
+    print(obs)
+    cent =  obs.mean(axis=0)
+    cent = cent[0:3]
+    n_rows = obs.shape[0]
+    min_dist = np.linalg.norm(np.array(obs[0][0:3]) - np.array(cent))
+    min_idx = 0
+    for i in range(1, n_rows):
+        dist = np.linalg.norm(np.array(obs[i][0:3]) - np.array(cent))
+        if(dist < min_dist):
+            min_idx = i
+            min_dist = dist
+    min_dist += (tol + r)
+    obs_info[0:3] = cent
+    obs_info[3] = min_dist
+    return obs_info
+
+# Function to check if point is in cluster
+def is_point_in_cluster(point, obs, tol):
+    r = obs[3]
+    dist = np.linalg.norm(np.array(obs[0:3]) - np.array(point[0:3]))
+    if(dist < (tol + r)):
+        return True
+    else:
+        return False
 
 def check_intersect_poly(x_coeff, y_coeff, dt, x, y, r):
     # Function describing distance between spline and point (x,y)
