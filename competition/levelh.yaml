@@ -19,7 +19,7 @@ quadrotor_config:
   gui: True # Whether to spawn PyBullet's GUI
   camera_view: [5, -40, -40, 0.5, -1, 0.5] # Distance, yaw, pitch, x, y, z target position
 
-  ctrl_freq: 30 # Frequency of the controller's decision making
+  ctrl_freq: 50 # Frequency of the controller's decision making
   pyb_freq: 500 # If `use_firmware` == True, must be multiple of 500, otherwise it must be multiple of ctrl_freq
   episode_len_sec: 33  # Maximum episode duration, in seconds
 
@@ -61,8 +61,14 @@ quadrotor_config:
     [  # x, y, z, r, p, y
       [0, -2.5, 0, 0, 0, 0],
       [1, -2, 0, 0, 0, 0],
-      [1.5, 0, 0, 0, 0, 0],
-      [-1, 0, 0, 0, 0, 0]
+      [1.2, 0, 0, 0, 0, 0],
+      [-0.3, 0, 0, 0, 0, 0],
+      [0.5, 0, 0, 0, 0, 0],
+      [0.75, -0.3, 0, 0, 0, 0],
+      [0.6, 0.4, 0, 0, 0, 0], 
+      [1.0, 0.3, 0, 0, 0, 0],
+      [1.2, 0.3, 0, 0, 0, 0],
+      [0.3, 0.2, 0, 0, 0, 0]
     ]
 
   # Randomization of the initial state

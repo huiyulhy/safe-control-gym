@@ -208,8 +208,12 @@ class Controller():
         # Obstacle radius (including randomness)
         r = initial_info['obstacle_dimensions']['radius']
         obstacle_distrib_dict = initial_info['gates_and_obs_randomization']
+        print(obstacle_distrib_dict)
         if 'obstacles' in obstacle_distrib_dict:
             r += max(abs(obstacle_distrib_dict['obstacles']['low']), abs(obstacle_distrib_dict['obstacles']['high']))
+
+        obstacle_info = utils.group_obstacles(self.NOMINAL_OBSTACLES, r)
+        print(obstacle_info)
 
         x_coeffs = []
         y_coeffs = []
@@ -245,10 +249,8 @@ class Controller():
             # Obstacle avoidance by finding closest points on spline to obstacle
             # Adds another waypoint that projects the spline outward from centre of obstacle
             projected_points = []
-            for obstacle in self.NOMINAL_OBSTACLES:
-                x = obstacle[0]
-                y = obstacle[1]
-                projected_point = utils.check_intersect_poly(x_coeff, y_coeff, dt, x, y, r)
+            for i in range(len(obstacle_info)):
+                projected_point = utils.check_intersect_poly(x_coeff, y_coeff, dt, obstacle_info[i][0], obstacle_info[i][1], obstacle_info[i][3])
                 if projected_point:
                     # print("projected points", projected_point)
                     projected_points += projected_point

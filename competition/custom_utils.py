@@ -140,6 +140,20 @@ def update_waypoints_avoid_obstacles(spline_waypoints, waypoints, obstacles, ini
 
     return is_collision, waypoints
 
+# function to group obstacles into larger groups
+def group_obstacles(nominal_obstacles, init_r):
+    print("Nominal obstacles")
+    print(nominal_obstacles)
+    if(len(nominal_obstacles) < 1):
+        return None
+    init_obs = np.array((1, 4))
+    features = {}
+    init_obs[0:3] = nominal_obstacles[0][0:3]
+    init_obs[3] = init_r
+    features[0] = nominal_obstacles[0][0:3]
+    return init_obs
+
+
 def check_intersect_poly(x_coeff, y_coeff, dt, x, y, r):
     # Function describing distance between spline and point (x,y)
     x_poly = np.copy(x_coeff)
